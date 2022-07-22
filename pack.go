@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"io/fs"
 	"io/ioutil"
 	"os"
@@ -22,8 +23,15 @@ func main() {
 		os.MkdirAll(applicationSupport+"/resources", chmod777)
 		traverseDir("resources")
 	}
-	cmd := exec.Command(applicationSupport+"/resources/jre/Contents/Home/bin/java", "-jar", applicationSupport+"/resources/app.jar")
-	cmd.Run()
+	args := []string{"-jar", applicationSupport + "/resources/app.jar"}
+	for _, arg := range os.Args[1:] {
+		args = append(args, arg)
+	}
+	//args := append(argsWithoutProg, )
+	cmd := exec.Command(applicationSupport+"/resources/jre/Contents/Home/bin/java", args...)
+	out, err := cmd.Output()
+	fmt.Println(err)
+	fmt.Println(string(out))
 }
 
 func traverseDir(dir string) {
